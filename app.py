@@ -3,13 +3,11 @@ from flask import Flask, request, jsonify, send_file
 from PIL import Image
 from rembg import remove
 import zipfile
-from pathlib import Path
-import uuid
 
 app = Flask(__name__)
 
 MAX_FILES = 5
-ALLOWED_TYPES = ["png", "jpg", "jpeg"]
+ALLOWED_TYPES = {"png", "jpg", "jpeg"}
 
 def remove_background(image_bytes):
     """Removes the background from an image."""
@@ -36,6 +34,10 @@ def remove_background_api():
     results = []
     
     for uploaded_file in uploaded_files:
+        if uploaded_file.filename == '':
+            return jsonify({'error': 'No selected file.'}), 400
+        if '.' in uploaded_file.filename and uploaded_file.filename.rsplit('.', 1)[1].lower() not in ALLOWED_TYPES:
+            return jsonify({'error': 'Invalid file type.'}), 400
         image_bytes = uploaded_file.read()
         result_image = remove_background(image_bytes)
         results.append(result_image)
