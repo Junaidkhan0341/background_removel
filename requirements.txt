@@ -2,3 +2,5 @@ Flask
 rembg
 Pillow
 waitress
+numpy<2.0
+onnxruntime
